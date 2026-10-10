@@ -5,11 +5,10 @@ const ID = "com.foxy-math.owlbear-inverter";
 
 async function inverter() {
   const ids = await OBR.player.getSelection();
-
-  if (!ids || ids.length === 0) return;
+  if (!ids?.length) return;
 
   const items = await OBR.scene.items.getItems(ids);
-  const imagens = items.filter(item => item.type === "IMAGE");
+  const imagens = items.filter(i => i.type === "IMAGE");
 
   if (!imagens.length) return;
 
@@ -21,40 +20,29 @@ async function inverter() {
 }
 
 function executar() {
-  inverter().catch(error => {
-    console.error("Erro ao inverter:", error);
-  });
+  inverter().catch(console.error);
 }
 
 OBR.onReady(async () => {
   const icon = new URL("./icon.svg", import.meta.url).href;
 
-  // Ferramenta com atalho J
   await OBR.tool.create({
     id: `${ID}/tool`,
-    shortcut: "J",
-    icons: [{
-      icon,
-      label: "Inverter Tokens (J)"
-    }],
+    icons: [{ icon, label: "Inverter Tokens" }],
     onClick() {
       executar();
       return false;
     }
   });
 
-  // Mantém a opção no menu de contexto
   await OBR.contextMenu.create({
-    id: `${ID}/inverter-j`,
+    id: `${ID}/inverter`,
     icons: [{
       icon,
       label: "Inverter selecionados",
       filter: {
         min: 1,
-        every: [{
-          key: "type",
-          value: "IMAGE"
-        }]
+        every: [{ key: "type", value: "IMAGE" }]
       }
     }],
     onClick() {
@@ -62,5 +50,25 @@ OBR.onReady(async () => {
     }
   });
 
-  console.log("Inverter Tokens: ferramenta J registrada");
+  // Recebe o comando do Tampermonkey
+  window.addEventListener("message", event => {
+    try {
+      const url = new URL(event.origin);
+      if (
+        url.hostname !== "owlbear.rodeo" &&
+        !url.hostname.endsWith(".owlbear.rodeo")
+      ) return;
+
+      if (
+        event.data?.type ===
+        "foxy-math:inverter-token"
+      ) {
+        executar();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  });
+
+  console.log("Inverter Tokens pronto!");
 });
