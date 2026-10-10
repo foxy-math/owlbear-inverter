@@ -1,15 +1,16 @@
+
 {
   "name": "Inverter Tokens",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "manifest_version": 1,
-  "description": "Inverte horizontalmente tokens selecionados no Owlbear Rodeo.",
-  "icon": "icon.svg",
-  "background_url": "background.html",
+  "description": "Inverte horizontalmente os tokens selecionados.",
+  "icon": "https://foxy-math.github.io/owlbear-inverter/icon.svg",
+  "background_url": "https://foxy-math.github.io/owlbear-inverter/background.html",
   "action": {
     "title": "Inverter Tokens",
-    "icon": "icon.svg",
-    "popover": "index.html",
-    "width": 260,
-    "height": 145
+    "icon": "https://foxy-math.github.io/owlbear-inverter/icon.svg",
+    "popover": "https://foxy-math.github.io/owlbear-inverter/index.html",
+    "width": 320,
+    "height": 180
   }
 }
