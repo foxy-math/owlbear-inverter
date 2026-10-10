@@ -1,0 +1,7 @@
+{
+  "name": "Inverter Tokens",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "description": "Inverte horizontalmente os tokens selecionados com um toque.",
+  "background_url": "index.html"
+}

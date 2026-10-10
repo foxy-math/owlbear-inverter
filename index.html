@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Inverter Tokens — Owlbear Rodeo</title>
+</head>
+<body>
+  <p id="status">Carregando botão de inverter…</p>
+  <script type="module">
+    import OBR from "https://esm.sh/@owlbear-rodeo/sdk@2.2.0";
+
+    const ID = "com.chatgpt.owlbear-inverter/action";
+    const status = document.getElementById("status");
+
+    async function inverterSelecionados() {
+      const ids = await OBR.player.getSelection();
+      if (!ids?.length) {
+        console.info("Inverter Tokens: selecione um ou mais tokens primeiro.");
+        return;
+      }
+
+      const selecionados = await OBR.scene.items.getItems(ids);
+      const imagens = selecionados.filter(item => item.type === "IMAGE");
+      if (!imagens.length) return;
+
+      await OBR.scene.items.updateItems(imagens, drafts => {
+        for (const item of drafts) {
+          // Apenas inverte o eixo horizontal; preserva tamanho e posição.
+          item.scale.x = -item.scale.x;
+        }
+      });
+    }
+
+    OBR.onReady(async () => {
+      try {
+        await OBR.tool.create({
+          id: ID,
+          icons: [{ icon: new URL("./icon.svg", window.location.href).href, label: "↔ Inverter tokens" }],
+          onClick() {
+            try {
+              void inverterSelecionados().catch(error => {
+                console.error("Não foi possível inverter os tokens:", error);
+              });
+            } catch (error) {
+              console.error("Erro ao iniciar inversão:", error);
+            }
+            return false;
+          }
+        });
+        status.textContent = "Botão registrado na barra de ferramentas.";
+      } catch (error) {
+        console.error("Falha ao registrar botão:", error);
+        status.textContent = "Erro ao registrar botão. Confira o console.";
+      }
+    });
+  </script>
+</body>
+</html>
