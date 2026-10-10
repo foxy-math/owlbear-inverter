@@ -1,0 +1,16 @@
+
+{
+  "name": "Inverter Tokens V3",
+  "version": "3.0.0",
+  "manifest_version": 1,
+  "description": "Inverte horizontalmente os tokens selecionados.",
+  "icon": "https://foxy-math.github.io/owlbear-inverter/icon.svg",
+  "background_url": "https://foxy-math.github.io/owlbear-inverter/background.html",
+  "action": {
+    "title": "Inverter Tokens V3",
+    "icon": "https://foxy-math.github.io/owlbear-inverter/icon.svg",
+    "popover": "https://foxy-math.github.io/owlbear-inverter/",
+    "width": 320,
+    "height": 180
+  }
+}
