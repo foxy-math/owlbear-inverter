@@ -1,7 +1,15 @@
 {
   "name": "Inverter Tokens",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "manifest_version": 1,
-  "description": "Inverte horizontalmente os tokens selecionados com um toque.",
-  "background_url": "index.html"
+  "description": "Inverte horizontalmente tokens selecionados no Owlbear Rodeo.",
+  "icon": "icon.svg",
+  "background_url": "background.html",
+  "action": {
+    "title": "Inverter Tokens",
+    "icon": "icon.svg",
+    "popover": "index.html",
+    "width": 260,
+    "height": 145
+  }
 }
