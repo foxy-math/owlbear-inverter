@@ -23,7 +23,7 @@ function executar() {
   inverter().catch(error => console.error("Inverter Tokens:", error));
 }
 
-// Nova janela pequena, fixa proxima do centro da lateral direita.
+// Botao posicionado abaixo da barra de ferramentas, mas acima do indicador de escala.
 async function mostrarBotaoFlutuante() {
   if (!(await OBR.scene.isReady())) return;
 
@@ -40,7 +40,7 @@ async function mostrarBotaoFlutuante() {
     anchorReference: "POSITION",
     anchorPosition: {
       left: Math.max(146, largura - 18),
-      top: Math.max(80, altura / 2),
+      top: Math.max(86, Math.min(altura - 110, Math.round(altura * 0.77))),
     },
     anchorOrigin: { horizontal: "RIGHT", vertical: "CENTER" },
     transformOrigin: { horizontal: "RIGHT", vertical: "CENTER" },
