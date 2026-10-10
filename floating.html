@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Botao flutuante - Inverter Tokens</title>
+  <style>
+    html, body { margin: 0; background: transparent; overflow: hidden; }
+    body { font-family: system-ui, Arial, sans-serif; padding: 5px; box-sizing: border-box; }
+    button {
+      display: block; width: 100%; height: 48px;
+      border: 1px solid #bdaaf9; border-radius: 12px;
+      background: #6d48cd; color: white;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; touch-action: manipulation;
+    }
+    button:disabled { opacity: 0.6; }
+    #status {
+      display: block; margin-top: 4px; color: #fff;
+      font-size: 10px; font-weight: 600; text-align: center;
+      text-shadow: 0 1px 3px #222;
+    }
+  </style>
+</head>
+<body>
+  <button id="inverter" disabled>Carregando...</button>
+  <span id="status" aria-live="polite"></span>
+  <script type="module">
+    import OBR from "https://esm.sh/@owlbear-rodeo/sdk@2.2.0";
+
+    const button = document.getElementById("inverter");
+    const status = document.getElementById("status");
+
+    OBR.onReady(() => {
+      button.disabled = false;
+      button.textContent = "↔ Inverter";
+    });
+
+    button.addEventListener("click", async () => {
+      if (button.disabled) return;
+      button.disabled = true;
+      try {
+        const ids = await OBR.player.getSelection();
+        if (!ids?.length) {
+          status.textContent = "Selecione um token";
+          return;
+        }
+        const items = await OBR.scene.items.getItems(ids);
+        const imagens = items.filter(item => item.type === "IMAGE");
+        if (!imagens.length) {
+          status.textContent = "Selecione uma imagem";
+          return;
+        }
+        await OBR.scene.items.updateItems(imagens, drafts => {
+          for (const item of drafts) item.scale.x = -item.scale.x;
+        });
+        status.textContent = "Invertido!";
+      } catch (error) {
+        console.error("Inverter Tokens:", error);
+        status.textContent = "Erro ao inverter";
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
