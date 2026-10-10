@@ -15,9 +15,10 @@ async function invertSelection() {
 
 OBR.onReady(async () => {
   try {
-    await OBR.tool.create({
-      id: ID,
-      icons: [{ icon: new URL("./icon.svg", import.meta.url).href, label: "Inverter tokens" }],
+   await OBR.tool.create({
+  id: ID,
+  shortcut: "f",
+  icons: [{ icon: new URL("./icon.svg", import.meta.url).href, label: "Inverter tokens" }],
       onClick() {
         void invertSelection().catch(error => console.error("Inverter Tokens:", error));
         return false;
