@@ -1,15 +1,26 @@
 
 import OBR from "https://esm.sh/@owlbear-rodeo/sdk@2.2.0";
 
-const ID = "com.foxy-math.owlbear-inverter/tool";
-const ACTION_ID = "com.foxy-math.owlbear-inverter/shortcut";
+const ID = "com.foxy-math.owlbear-inverter";
 
-async function inverter() {
-  const ids = await OBR.player.getSelection();
-  if (!ids || ids.length === 0) return;
+// Inverte os tokens selecionados
+async function inverter(itemsSelecionados = null) {
+  let items = itemsSelecionados;
 
-  const items = await OBR.scene.items.getItems(ids);
-  const imagens = items.filter(item => item.type === "IMAGE");
+  if (!items) {
+    const ids = await OBR.player.getSelection();
+
+    if (!ids || ids.length === 0) {
+      console.log("Nenhum token selecionado");
+      return;
+    }
+
+    items = await OBR.scene.items.getItems(ids);
+  }
+
+  const imagens = items.filter(
+    item => item.type === "IMAGE"
+  );
 
   if (imagens.length === 0) return;
 
@@ -20,40 +31,56 @@ async function inverter() {
   });
 }
 
-function executar() {
-  inverter().catch(error => {
-    console.error("Erro ao inverter:", error);
+// Trata possíveis erros
+function executar(items = null) {
+  inverter(items).catch(error => {
+    console.error("Erro ao inverter token:", error);
   });
 }
 
+// Inicialização da extensão
 OBR.onReady(async () => {
   const icon = new URL("./icon.svg", import.meta.url).href;
 
-  // Mantém o botão que já funciona
+  // Botão original na barra de ferramentas
   await OBR.tool.create({
-    id: ID,
-    icons: [{
-      icon,
-      label: "Inverter tokens"
-    }],
+    id: `${ID}/tool`,
+    icons: [
+      {
+        icon,
+        label: "Inverter tokens"
+      }
+    ],
     onClick() {
       executar();
       return false;
     }
   });
 
-  // Nova ação com atalho F
-  await OBR.tool.createAction({
-    id: ACTION_ID,
-    shortcut: "F",
-    icons: [{
-      icon,
-      label: "Inverter selecionados (F)"
-    }],
-    onClick() {
-      executar();
+  // Atalho de teclado J
+  // Também cria a opção no menu de contexto
+  await OBR.contextMenu.create({
+    id: `${ID}/inverter-j`,
+    shortcut: "J",
+    icons: [
+      {
+        icon,
+        label: "Inverter selecionados (J)",
+        filter: {
+          min: 1,
+          every: [
+            {
+              key: "type",
+              value: "IMAGE"
+            }
+          ]
+        }
+      }
+    ],
+    onClick(context) {
+      executar(context.items);
     }
   });
 
-  console.log("Inverter Tokens: atalho registrado");
+  console.log("Inverter Tokens: atalho J registrado!");
 });
