@@ -36,10 +36,11 @@ OBR.onReady(async () => {
   });
 
   await OBR.contextMenu.create({
-    id: `${ID}/inverter`,
-    icons: [{
-      icon,
-      label: "Inverter selecionados",
+  id: `${ID}/inverter`,
+  shortcut: "J",
+  icons: [{
+    icon,
+    label: "Inverter selecionados (J)",
       filter: {
         min: 1,
         every: [{ key: "type", value: "IMAGE" }]
