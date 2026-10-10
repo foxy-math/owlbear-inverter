@@ -1,31 +1,59 @@
+
 import OBR from "https://esm.sh/@owlbear-rodeo/sdk@2.2.0";
 
 const ID = "com.foxy-math.owlbear-inverter/tool";
+const ACTION_ID = "com.foxy-math.owlbear-inverter/shortcut";
 
-async function invertSelection() {
+async function inverter() {
   const ids = await OBR.player.getSelection();
   if (!ids || ids.length === 0) return;
+
   const items = await OBR.scene.items.getItems(ids);
-  const images = items.filter(item => item.type === "IMAGE");
-  if (!images.length) return;
-  await OBR.scene.items.updateItems(images, drafts => {
-    for (const item of drafts) item.scale.x = -item.scale.x;
+  const imagens = items.filter(item => item.type === "IMAGE");
+
+  if (imagens.length === 0) return;
+
+  await OBR.scene.items.updateItems(imagens, drafts => {
+    for (const item of drafts) {
+      item.scale.x = -item.scale.x;
+    }
+  });
+}
+
+function executar() {
+  inverter().catch(error => {
+    console.error("Erro ao inverter:", error);
   });
 }
 
 OBR.onReady(async () => {
-  try {
-   await OBR.tool.create({
-  id: ID,
-  shortcut: "f",
-  icons: [{ icon: new URL("./icon.svg", import.meta.url).href, label: "Inverter tokens" }],
-      onClick() {
-        void invertSelection().catch(error => console.error("Inverter Tokens:", error));
-        return false;
-      }
-    });
-    console.info("Inverter Tokens: ferramenta registrada.");
-  } catch (error) {
-    console.error("Inverter Tokens: não foi possível registrar ferramenta:", error);
-  }
+  const icon = new URL("./icon.svg", import.meta.url).href;
+
+  // Mantém o botão que já funciona
+  await OBR.tool.create({
+    id: ID,
+    icons: [{
+      icon,
+      label: "Inverter tokens"
+    }],
+    onClick() {
+      executar();
+      return false;
+    }
+  });
+
+  // Nova ação com atalho F
+  await OBR.tool.createAction({
+    id: ACTION_ID,
+    shortcut: "F",
+    icons: [{
+      icon,
+      label: "Inverter selecionados (F)"
+    }],
+    onClick() {
+      executar();
+    }
+  });
+
+  console.log("Inverter Tokens: atalho registrado");
 });
