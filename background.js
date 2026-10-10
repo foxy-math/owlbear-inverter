@@ -3,26 +3,15 @@ import OBR from "https://esm.sh/@owlbear-rodeo/sdk@2.2.0";
 
 const ID = "com.foxy-math.owlbear-inverter";
 
-// Inverte os tokens selecionados
-async function inverter(itemsSelecionados = null) {
-  let items = itemsSelecionados;
+async function inverter() {
+  const ids = await OBR.player.getSelection();
 
-  if (!items) {
-    const ids = await OBR.player.getSelection();
+  if (!ids || ids.length === 0) return;
 
-    if (!ids || ids.length === 0) {
-      console.log("Nenhum token selecionado");
-      return;
-    }
+  const items = await OBR.scene.items.getItems(ids);
+  const imagens = items.filter(item => item.type === "IMAGE");
 
-    items = await OBR.scene.items.getItems(ids);
-  }
-
-  const imagens = items.filter(
-    item => item.type === "IMAGE"
-  );
-
-  if (imagens.length === 0) return;
+  if (!imagens.length) return;
 
   await OBR.scene.items.updateItems(imagens, drafts => {
     for (const item of drafts) {
@@ -31,56 +20,47 @@ async function inverter(itemsSelecionados = null) {
   });
 }
 
-// Trata possíveis erros
-function executar(items = null) {
-  inverter(items).catch(error => {
-    console.error("Erro ao inverter token:", error);
+function executar() {
+  inverter().catch(error => {
+    console.error("Erro ao inverter:", error);
   });
 }
 
-// Inicialização da extensão
 OBR.onReady(async () => {
   const icon = new URL("./icon.svg", import.meta.url).href;
 
-  // Botão original na barra de ferramentas
+  // Ferramenta com atalho J
   await OBR.tool.create({
     id: `${ID}/tool`,
-    icons: [
-      {
-        icon,
-        label: "Inverter tokens"
-      }
-    ],
+    shortcut: "J",
+    icons: [{
+      icon,
+      label: "Inverter Tokens (J)"
+    }],
     onClick() {
       executar();
       return false;
     }
   });
 
-  // Atalho de teclado J
-  // Também cria a opção no menu de contexto
+  // Mantém a opção no menu de contexto
   await OBR.contextMenu.create({
     id: `${ID}/inverter-j`,
-    shortcut: "J",
-    icons: [
-      {
-        icon,
-        label: "Inverter selecionados (J)",
-        filter: {
-          min: 1,
-          every: [
-            {
-              key: "type",
-              value: "IMAGE"
-            }
-          ]
-        }
+    icons: [{
+      icon,
+      label: "Inverter selecionados",
+      filter: {
+        min: 1,
+        every: [{
+          key: "type",
+          value: "IMAGE"
+        }]
       }
-    ],
-    onClick(context) {
-      executar(context.items);
+    }],
+    onClick() {
+      executar();
     }
   });
 
-  console.log("Inverter Tokens: atalho J registrado!");
+  console.log("Inverter Tokens: ferramenta J registrada");
 });
